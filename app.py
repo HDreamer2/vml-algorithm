@@ -24,5 +24,10 @@ def upload_csv():
 
     return jsonify({'message': 'File uploaded successfully', 'file_path': file_path}), 200
 
+@app.route('/linear-regression', methods=['POST'])
+def linearRegressionTrain():
+
+    #TODO 获取所有参数；调用Linear Regression.py的LinearRegression函数
+    return
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
