@@ -2,7 +2,12 @@ import pandas as pd
 import torch
 import random
 import numpy as np
+# 获取当前工作目录
+current_working_directory = os.getcwd()
+# 拼接文件路径
+file_path = os.path.join(current_working_directory, 'uploads', 'generated_data.csv')
 
+epoch_data = []
 def read_data_set(csv_file, features, label):
 
     samples = csv_file[features].values.tolist()
@@ -43,7 +48,15 @@ def transfer_data(epoch, w, b, loss):
     :return:
     '''
     #TODO 将数据传给Java后端
-    print(loss)
+    global epoch_data
+    data = {
+        'epoch': epoch,
+        'weights': w.detach().numpy().tolist(),
+        'bias': b.detach().numpy().tolist(),
+        'loss': loss.item()
+    }
+    epoch_data.append(data)
+    print(data)
 
 
 def LinearRegression(csv_file, features, label, epochs, learn_rate = 0.0005, batch_size = 5):
