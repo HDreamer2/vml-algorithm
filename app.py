@@ -52,7 +52,7 @@ def linear_regression_train():
 
     return jsonify({'message': 'Training started successfully'}), 200
 
-
+#暂时不用这个接口
 @app.route('/linear-regression/get-epoch-data', methods=['GET'])
 def get_epoch_data():
     # 假设epoch_data是全局变量或存储在某处
