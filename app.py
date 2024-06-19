@@ -45,7 +45,7 @@ def linear_regression_train():
     data = request.form
 
     features = json.loads(data.get('features'))
-    label = data.get('label')
+    label = [data.get('label')]
     epochs = int(data.get('epoch'))
 
     data = pd.read_csv(file_path)
