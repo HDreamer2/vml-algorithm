@@ -46,8 +46,6 @@ def transfer_data(epoch, w, b, loss, feature_weights):
     :return:
     '''
 
-    # print(feature_weights)
-    # print(loss)
 
     data = {
         'epoch': epoch,
@@ -56,8 +54,6 @@ def transfer_data(epoch, w, b, loss, feature_weights):
         'loss': loss.item(),
         'featureWeights': feature_weights.detach().numpy().tolist()
     }
-    # epoch_data.append(data)
-    print(data)
     response = requests.post(LOGISTIC_REGRESSION_GET_EPOCH_DATA, json=data)
 
 
