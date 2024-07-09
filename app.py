@@ -1,9 +1,13 @@
-from flask import Flask, request, jsonify
+import json
 import os
+
+import pandas as pd
+import torch
+from flask import Flask, request, jsonify
+
+from DecisionTree import DecisionTreeModel
 from Linear_Regression import LinearRegression
 from LogisticRegression import LogisticRegression
-import pandas as pd
-import json
 
 app = Flask(__name__)
 
@@ -84,6 +88,30 @@ def logic_regression_train():
 
     return jsonify({'message': 'Training started successfully'}), 200
 
+
+@app.route('/decision-tree/train', methods=['POST'])
+def decision_tree_train():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(file_path)
+
+    data = request.form
+
+    features = json.loads(data.get('features'))
+    label = [data.get('label')]
+
+    data = pd.read_csv(file_path)
+
+    DecisionTreeModel(data,features,label)
+
+
+    return jsonify({'message': 'Training started successfully'}), 200
 
 
 if __name__ == '__main__':
