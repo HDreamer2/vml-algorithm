@@ -8,7 +8,7 @@ from flask import Flask, request, jsonify
 from DecisionTree import DecisionTreeModel
 from Linear_Regression import LinearRegression
 from LogisticRegression import LogisticRegression
-from RandomForest import RandomForest
+from RandomForest import RandomForestModel
 
 app = Flask(__name__)
 
@@ -133,7 +133,7 @@ def random_forest_train():
 
     data = pd.read_csv(file_path)
 
-    RandomForest(data,features,label)
+    RandomForestModel(data,features,label)
 
 
     return jsonify({'message': 'Training started successfully'}), 200
