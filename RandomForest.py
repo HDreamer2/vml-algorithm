@@ -1,4 +1,5 @@
 import json
+import logging
 from collections import Counter
 import requests
 import numpy as np
@@ -7,7 +8,7 @@ import random
 from Constant import RANDOM_FOREST_GET_DATA
 from DecisionTree import DecisionTree
 
-
+logging.basicConfig(level=logging.INFO, format='%(asctime)s - %(levelname)s - %(message)s')
 class RandomForest:
     def __init__(self, n_trees=10, max_depth=None, features_num=3):
         self.n_trees = n_trees
@@ -57,6 +58,7 @@ def RandomForestModel(data, l1, l2):
     y = data[l2].to_numpy().flatten()
     tree = RandomForest(max_depth=3)
     tree.fit(X, y)
+    logging.info("transfer data: %s", tree)
     transfer_data(tree)
 
 def convert_to_serializable(data):
@@ -81,14 +83,19 @@ def transfer_data(forest):
     dtos = []
 
     for i, (tree, features) in enumerate(zip(forest.trees, forest.selected_features)):
-        serialized_tree = convert_to_serializable(tree)
+        # print(f"Tree Index: {i}, Selected Features: {features},Tree Structure : {tree.tree}")
+
+        serialized_tree = convert_to_serializable(tree.tree)
+        logging.info("%i:serialized_tree: %s", i,serialized_tree)
         dto = {
-            'features': features,
+            'tree_idx': i,
+            'features': features.tolist(),
             'tree': serialized_tree
         }
         dtos.append(dto)
-
-    response = requests.post(RANDOM_FOREST_GET_DATA, json=json.dumps(dtos))
+    logging.info("Sending dto data: %s", dtos)
+    # logging.info("Sending dumps dto data: %s", json.dumps(dtos))
+    response = requests.post(RANDOM_FOREST_GET_DATA, json=dtos)
 
 
 # 示例用法
