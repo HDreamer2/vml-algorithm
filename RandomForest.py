@@ -1,73 +1,11 @@
+import json
 from collections import Counter
 import requests
 import numpy as np
 import pandas as pd
 import random
 from Constant import RANDOM_FOREST_GET_DATA
-class DecisionTree:
-    def __init__(self, max_depth=None):
-        self.max_depth = max_depth
-
-    def entropy(self, y):
-        m = len(y)
-        if m == 0:
-            return 0
-        proportions = np.bincount(y) / m
-        return -np.sum([p * np.log2(p) for p in proportions if p > 0])
-
-    def split(self, X, y, feature, threshold):
-        left_mask = X[:, feature] <= threshold
-        right_mask = X[:, feature] > threshold
-        return X[left_mask], y[left_mask], X[right_mask], y[right_mask]
-
-    def best_split(self, X, y):
-        m, n = X.shape
-        best_feature, best_threshold = None, None
-        best_entropy = float('inf')
-
-        for feature in range(n):
-            thresholds = np.unique(X[:, feature]).astype(float)
-
-            for threshold in thresholds:
-                X_left, y_left, X_right, y_right = self.split(X, y, feature, threshold)
-                if len(y_left) == 0 or len(y_right) == 0:
-                    continue
-                p_left, p_right = len(y_left) / m, len(y_right) / m
-                current_entropy = p_left * self.entropy(y_left) + p_right * self.entropy(y_right)
-                if current_entropy < best_entropy:
-                    best_entropy = current_entropy
-                    best_feature, best_threshold = feature, threshold
-
-        return best_feature, best_threshold
-
-    def build_tree(self, X, y, depth=0):
-        if len(set(y)) == 1 or depth == self.max_depth or len(y) == 0:
-            return np.bincount(y).argmax()
-
-        feature, threshold = self.best_split(X, y)
-        if feature is None:
-            return np.bincount(y).argmax()
-
-        X_left, y_left, X_right, y_right = self.split(X, y, feature, threshold)
-        left_subtree = self.build_tree(X_left, y_left, depth + 1)
-        right_subtree = self.build_tree(X_right, y_right, depth + 1)
-
-        return (feature, threshold, left_subtree, right_subtree)
-
-    def fit(self, X, y):
-        self.tree = self.build_tree(X, y)
-
-    def predict_sample(self, x, tree):
-        if not isinstance(tree, tuple):
-            return tree
-        feature, threshold, left_subtree, right_subtree = tree
-        if x[feature] <= threshold:
-            return self.predict_sample(x, left_subtree)
-        else:
-            return self.predict_sample(x, right_subtree)
-
-    def predict(self, X):
-        return np.array([self.predict_sample(x, self.tree) for x in X])
+from DecisionTree import DecisionTree
 
 
 class RandomForest:
@@ -133,17 +71,24 @@ def convert_to_serializable(data):
     else:
         return data
 
-def transfer_data(tree):
+def transfer_data(forest):
     '''
     need to complete
     :param tree:
     :return:
     '''
 
-    data = {
-        'data': convert_to_serializable(tree)
-    }
-    response = requests.post(RANDOM_FOREST_GET_DATA, json=data)
+    dtos = []
+
+    for i, (tree, features) in enumerate(zip(forest.trees, forest.selected_features)):
+        serialized_tree = convert_to_serializable(tree)
+        dto = {
+            'features': features,
+            'tree': serialized_tree
+        }
+        dtos.append(dto)
+
+    response = requests.post(RANDOM_FOREST_GET_DATA, json=json.dumps(dtos))
 
 
 # 示例用法
