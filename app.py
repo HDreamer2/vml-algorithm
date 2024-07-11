@@ -8,6 +8,7 @@ from flask import Flask, request, jsonify
 from DecisionTree import DecisionTreeModel
 from Linear_Regression import LinearRegression
 from LogisticRegression import LogisticRegression
+from RandomForest import RandomForest
 
 app = Flask(__name__)
 
