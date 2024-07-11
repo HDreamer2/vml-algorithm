@@ -113,6 +113,29 @@ def decision_tree_train():
 
     return jsonify({'message': 'Training started successfully'}), 200
 
+@app.route('/random-forest/train', methods=['POST'])
+def random_forest_train():
+    if 'file' not in request.files:
+        return jsonify({'error': 'No file part'}), 400
+
+    file = request.files['file']
+    if file.filename == '':
+        return jsonify({'error': 'No selected file'}), 400
+
+    file_path = os.path.join(UPLOAD_FOLDER, file.filename)
+    file.save(file_path)
+
+    data = request.form
+
+    features = json.loads(data.get('features'))
+    label = [data.get('label')]
+
+    data = pd.read_csv(file_path)
+
+    RandomForest(data,features,label)
+
+
+    return jsonify({'message': 'Training started successfully'}), 200
 
 if __name__ == '__main__':
     app.run(debug=True, host='0.0.0.0', port=5000)
