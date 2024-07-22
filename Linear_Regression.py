@@ -40,7 +40,7 @@ def linear_model(X, w, b):
     return torch.matmul(X, w) + b
 
 
-def transfer_data(epoch, w, b, loss):
+def transfer_data(epoch, w, b, loss,userId,fileId):
     '''
     need to complete
     :param epoch:
@@ -53,14 +53,16 @@ def transfer_data(epoch, w, b, loss):
         'epoch': epoch,
         'weights': w.detach().numpy().tolist(),
         'bias': b.detach().numpy().tolist(),
-        'loss': loss.item()
+        'loss': loss.item(),
+        'userId':userId,
+        'fileId':fileId
     }
     epoch_data.append(data)
 
     response = requests.post(LINEAR_REGRESSION_GET_EPOCH_DATA, json=data)
 
 
-def LinearRegression(csv_file, features, label, epochs, learn_rate = 0.0005, batch_size = 5):
+def LinearRegression(csv_file, features, label, epochs, userId,fileId,learn_rate = 0.0005, batch_size = 5):
     model = linear_model
     samples, labels = read_data_set(csv_file, features, label)
 
@@ -79,7 +81,7 @@ def LinearRegression(csv_file, features, label, epochs, learn_rate = 0.0005, bat
             trainer.step()
 
         l = loss(model(samples, w, b), labels)
-        transfer_data(epoch + 1, w, b, l)
+        transfer_data(epoch + 1, w, b, l,userId,fileId)
 
 
 # data = pd.read_csv("C:/Users/admin/Desktop/generated_data.csv")
