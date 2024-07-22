@@ -73,12 +73,12 @@ class DecisionTree:
 
 
 
-def DecisionTreeModel(data, l1, l2):
+def DecisionTreeModel(data, l1, l2,userId,fileId):
     X = data[l1].to_numpy()
     y = data[l2].to_numpy().flatten()
     tree = DecisionTree(max_depth=3)
     tree.fit(X, y)
-    transfer_data(tree.tree)
+    transfer_data(tree.tree,userId,fileId)
 
 def convert_to_serializable(data):
     if isinstance(data, np.int64):
@@ -92,7 +92,7 @@ def convert_to_serializable(data):
     else:
         return data
 
-def transfer_data(tree):
+def transfer_data(tree,userId,fileId):
     '''
     need to complete
     :param tree:
@@ -100,7 +100,9 @@ def transfer_data(tree):
     '''
 
     data = {
-        'data': convert_to_serializable(tree)
+        'data': convert_to_serializable(tree),
+        'userId': userId,
+        'fileId':fileId
     }
     response = requests.post(DECISION_TREE_GET_DATA, json=data)
 
