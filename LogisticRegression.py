@@ -36,7 +36,7 @@ def read_batch_data(batch_size, samples, labels):
 def logistic_model(X, w, b):
     return torch.sigmoid(torch.matmul(X, w) + b)
 
-def transfer_data(epoch, w, b, loss, feature_weights):
+def transfer_data(epoch, w, b, loss, feature_weights,userId,fileId):
     '''
     need to complete
     :param epoch:
@@ -52,13 +52,15 @@ def transfer_data(epoch, w, b, loss, feature_weights):
         'weights': w.detach().numpy().tolist(),
         'bias': b.detach().numpy().tolist(),
         'loss': loss.item(),
-        'featureWeights': feature_weights.detach().numpy().tolist()
+        'featureWeights': feature_weights.detach().numpy().tolist(),
+        'userId': userId,
+        'fileId':fileId
     }
     response = requests.post(LOGISTIC_REGRESSION_GET_EPOCH_DATA, json=data)
 
 
 
-def LogisticRegression(csv_file, features, label, epochs, learn_rate = 0.0005, batch_size = 5):
+def LogisticRegression(csv_file, features, label, epochs,userId,fileId, learn_rate = 0.0005, batch_size = 5):
     model = logistic_model
     samples, labels = read_data_set(csv_file, features, label)
 
@@ -81,7 +83,7 @@ def LogisticRegression(csv_file, features, label, epochs, learn_rate = 0.0005, b
         if epoch == epochs - 1:
             feature_weights = abs(w) / sum(abs(w))
         l = loss(model(samples, w, b), labels)
-        transfer_data(epoch + 1, w, b, l, feature_weights)
+        transfer_data(epoch + 1, w, b, l, feature_weights,userId,fileId)
 
 
 # data = pd.read_csv("./uploads/random_data.csv")
