@@ -53,13 +53,13 @@ class RandomForest:
             print(f"Features: {features}")
             print(tree.tree)
 
-def RandomForestModel(data, l1, l2):
+def RandomForestModel(data, l1, l2,userId,fileId):
     X = data[l1].to_numpy()
     y = data[l2].to_numpy().flatten()
     tree = RandomForest(max_depth=3)
     tree.fit(X, y)
     logging.info("transfer data: %s", tree)
-    transfer_data(tree)
+    transfer_data(tree,userId,fileId)
 
 def convert_to_serializable(data):
     if isinstance(data, np.int64):
@@ -73,7 +73,7 @@ def convert_to_serializable(data):
     else:
         return data
 
-def transfer_data(forest):
+def transfer_data(forest,userId,fileId):
     '''
     need to complete
     :param tree:
@@ -90,7 +90,9 @@ def transfer_data(forest):
         dto = {
             'tree_idx': i,
             'features': features.tolist(),
-            'tree': serialized_tree
+            'tree': serialized_tree,
+            'userId': userId,
+            'fileId':fileId
         }
         dtos.append(dto)
     logging.info("Sending dto data: %s", dtos)
