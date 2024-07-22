@@ -52,10 +52,11 @@ def linear_regression_train():
     features = json.loads(data.get('features'))
     label = [data.get('label')]
     epochs = int(data.get('epoch'))
-
+    userId=data.get('userId')
+    fileId=data.get('fileId')
     data = pd.read_csv(file_path)
-    LinearRegression(data, features, label, epochs)
-
+    LinearRegression(data, features, label, epochs,userId,fileId)
+    
     return jsonify({'message': 'Training started successfully'}), 200
 
 
@@ -83,9 +84,10 @@ def logic_regression_train():
     features = json.loads(data.get('features'))
     label = [data.get('label')]
     epochs = int(data.get('epoch'))
-
+    userId=data.get('userId')
+    fileId=data.get('fileId')
     data = pd.read_csv(file_path)
-    LogisticRegression(data, features, label, epochs)
+    LogisticRegression(data, features, label, epochs,userId,fileId)
 
     return jsonify({'message': 'Training started successfully'}), 200
 
@@ -106,10 +108,11 @@ def decision_tree_train():
 
     features = json.loads(data.get('features'))
     label = [data.get('label')]
-
+    userId=data.get('userId')
+    fileId=data.get('fileId')
     data = pd.read_csv(file_path)
 
-    DecisionTreeModel(data,features,label)
+    DecisionTreeModel(data,features,label,userId,fileId)
 
 
     return jsonify({'message': 'Training started successfully'}), 200
@@ -130,13 +133,14 @@ def random_forest_train():
 
     features = json.loads(data.get('features'))
     label = [data.get('label')]
-
+    userId=data.get('userId')
+    fileId=data.get('fileId')
     data = pd.read_csv(file_path)
 
-    RandomForestModel(data,features,label)
+    RandomForestModel(data,features,label,userId,fileId)
 
 
     return jsonify({'message': 'Training started successfully'}), 200
 
 if __name__ == '__main__':
-    app.run(debug=True, host='0.0.0.0', port=5000)
+    app.run(debug=True, host='0.0.0.0', port=8084)
